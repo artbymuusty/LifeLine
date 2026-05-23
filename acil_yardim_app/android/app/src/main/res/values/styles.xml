@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 1) Uygulama açılışında kullanılacak tema (Splash Screen) -->
+    <style name="LaunchTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Pencerenin arkaplanına launch_background drawable’ını yerleştirir -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+    <!-- 2) Şeffaf / tam ekran tema -->
+    <style name="Theme.App.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Pencereyi saydam (arka plandaki her şey görünsün) yapar -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- Başlık çubuğunu (ActionBar/TitleBar) gizler -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- Uygulamayı tam ekrana çevirir (statü çubuğunu gizler) -->
+        <item name="android:windowFullscreen">true</item>
+    </style>
+</resources>
