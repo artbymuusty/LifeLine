@@ -53,9 +53,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadCustomKits() async {
     try {
       final rows = await DatabaseService.getAllKits();
-      final kits = rows.map<CustomKit>((row) => CustomKit.fromMap(row)).toList();
+      final kits =
+          rows.map<CustomKit>((row) => CustomKit.fromMap(row)).toList();
       setState(() {
-        _customKits..clear()..addAll(kits);
+        _customKits
+          ..clear()
+          ..addAll(kits);
       });
     } catch (e) {
       debugPrint('Özel çantalar yüklenirken hata: $e');
@@ -139,7 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           return _buildKitCard(
                             icon: Icons.home_repair_service,
                             title: 'Sel Çantası',
-                            info: 'Su Geçirmez Malzemeler ve Koruyucu Ekipmanlar',
+                            info:
+                                'Su Geçirmez Malzemeler ve Koruyucu Ekipmanlar',
                             value: 'sel',
                             onInfoTap: () {
                               _showKitDialog(
@@ -154,7 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Expanded(child: _buildCustomKitCard(kit)),
                               IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                icon: const Icon(Icons.delete,
+                                    color: Colors.redAccent),
                                 onPressed: () => _confirmDelete(kit),
                               ),
                             ],
@@ -168,18 +173,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: FloatingActionButton.extended(
                       heroTag: 'ozel_kit',
                       onPressed: () async {
-                        final result = await Navigator.pushNamed(context, '/custom-kit');
+                        final result =
+                            await Navigator.pushNamed(context, '/custom-kit');
                         if (result is CustomKit) {
                           await DatabaseService.insertKit(
-                            result.id,
-                            result.name,
-                            <String>[]
-                          );
+                              result.id, result.name, <String>[]);
                         }
                         await _loadCustomKits();
                         if (result is CustomKit) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Özel çantanız başarıyla oluşturuldu.')),
+                            const SnackBar(
+                                content: Text(
+                                    'Özel çantanız başarıyla oluşturuldu.')),
                           );
                         }
                       },
@@ -191,7 +196,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     Text(
                       helpProvider.lastError!,
-                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -221,8 +227,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       )
                     : const Text(
-                        'Çanta Gönder', 
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                        'Acil Yardım Gönder',
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
               ),
             ),
@@ -290,12 +299,15 @@ class _HomeScreenState extends State<HomeScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: selected ? Colors.redAccent.shade100.withOpacity(0.3) : Colors.white,
-          border: Border.all(color: selected ? kAccentColor : Colors.grey.shade300),
+          color: selected
+              ? Colors.redAccent.shade100.withOpacity(0.3)
+              : Colors.white,
+          border:
+              Border.all(color: selected ? kAccentColor : Colors.grey.shade300),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              blurRadius: 4, 
+              blurRadius: 4,
               color: selected ? kAccentColor.withOpacity(0.1) : Colors.black12,
               offset: const Offset(0, 2),
             )
@@ -309,10 +321,14 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
                   if (info != null && info.trim().isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text(info, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                    Text(info,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.grey.shade600)),
                   ],
                 ],
               ),
@@ -337,8 +353,13 @@ class _HomeScreenState extends State<HomeScreen> {
       value: kit.id,
       onInfoTap: () async {
         final rows = await DatabaseService.getAllKits();
-        final match = rows.firstWhere((e) => e['id'] == kit.id, orElse: () => {});
-        final items = (match['items'] ?? '').toString().split(',').where((e) => e.isNotEmpty).join(', ');
+        final match =
+            rows.firstWhere((e) => e['id'] == kit.id, orElse: () => {});
+        final items = (match['items'] ?? '')
+            .toString()
+            .split(',')
+            .where((e) => e.isNotEmpty)
+            .join(', ');
 
         showDialog(
           context: context,
@@ -388,9 +409,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedKit!.startsWith('ozel')) {
       try {
         final rows = await DatabaseService.getAllKits();
-        final match = rows.firstWhere((e) => e['id'] == _selectedKit, orElse: () => {});
+        final match =
+            rows.firstWhere((e) => e['id'] == _selectedKit, orElse: () => {});
         if (match.isNotEmpty && match['items'] != null) {
-          selectedItems = (match['items'] as String).split(',').where((e) => e.isNotEmpty).toList();
+          selectedItems = (match['items'] as String)
+              .split(',')
+              .where((e) => e.isNotEmpty)
+              .toList();
         }
       } catch (e) {
         debugPrint('Custom items parse error: $e');
@@ -399,16 +424,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final provider = context.read<HelpRequestProvider>();
     provider.selectedKit = _selectedKit;
-    
+
     // Dispatch call through state provider pipeline
-    final success = await provider.sendRequest(context, selectedItems: selectedItems);
+    final success =
+        await provider.sendRequest(context, selectedItems: selectedItems);
 
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('🚨 Yardım çağrınız ve konumunuz başarıyla gönderildi.'),
+          content:
+              Text('🚨 Yardım çağrınız ve konumunuz başarıyla gönderildi.'),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 4),
         ),
@@ -416,7 +443,8 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(provider.lastError ?? 'Çağrı gönderilemedi. Lütfen tekrar deneyin.'),
+          content: Text(provider.lastError ??
+              'Çağrı gönderilemedi. Lütfen tekrar deneyin.'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
         ),

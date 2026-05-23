@@ -63,7 +63,6 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('Oturumu Kapat'),
             onTap: () => context.read<AuthProvider>().logout(),
           ),
-
           const SettingsSectionHeader('Görünüm & Erişilebilirlik'),
           ListTile(
             leading: const Icon(Icons.format_size),
@@ -75,10 +74,10 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('Tema'),
             trailing: Switch(
               value: context.watch<ThemeProvider>().isDarkMode,
-              onChanged: (value) => context.read<ThemeProvider>().toggleTheme(value),
+              onChanged: (value) =>
+                  context.read<ThemeProvider>().toggleTheme(value),
             ),
           ),
-
           const SettingsSectionHeader('Çağrı Geçmişi'),
           ListTile(
             leading: const Icon(Icons.history),
@@ -88,7 +87,6 @@ class SettingsScreen extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const CallHistoryScreen()),
             ),
           ),
-
           const SettingsSectionHeader('Yardım & Hakkında'),
           ListTile(
             leading: const Icon(Icons.help_outline),
@@ -125,4 +123,3 @@ class SettingsSectionHeader extends StatelessWidget {
     );
   }
 }
-  

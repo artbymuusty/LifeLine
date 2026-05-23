@@ -20,7 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool locationPermission = true;
   String lastKnownLocation = ''; // "lat, lng" or error message
 
-  final TextEditingController nameController  = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       final data = await ApiService.fetchProfile(token);
       setState(() {
-        nameController.text  = data['name']  ?? '';
+        nameController.text = data['name'] ?? '';
         phoneController.text = data['phone'] ?? '';
         emailController.text = data['email'] ?? '';
       });
@@ -139,7 +139,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 24),
-
             TextField(
               controller: phoneController,
               decoration: const InputDecoration(
@@ -153,14 +152,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
             const SizedBox(height: 16),
-
             TextField(
               controller: emailController,
               decoration: const InputDecoration(labelText: 'E-posta Adresi'),
               keyboardType: TextInputType.emailAddress,
             ),
             const Divider(height: 32),
-
             const Text(
               'Konum Bilgisi',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -171,15 +168,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               leading: const Icon(Icons.location_on),
               title: Text(lastKnownLocation),
               subtitle: Text(
-                locationPermission ? 'Konum erişimi açık' : 'Konum erişimi kapalı',
+                locationPermission
+                    ? 'Konum erişimi açık'
+                    : 'Konum erişimi kapalı',
               ),
             ),
             const Divider(height: 32),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Gönüllü Olmak İstiyorum', style: TextStyle(fontSize: 16)),
+                const Text('Gönüllü Olmak İstiyorum',
+                    style: TextStyle(fontSize: 16)),
                 Switch(
                   value: wantsToHelp,
                   onChanged: (v) => setState(() => wantsToHelp = v),
@@ -219,7 +218,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Hata: ${e.toString().replaceAll('Exception: ', '')}'),
+            content:
+                Text('Hata: ${e.toString().replaceAll('Exception: ', '')}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
           ),

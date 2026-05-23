@@ -22,7 +22,8 @@ class NotificationsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.notifications, color: Colors.grey),
             title: const Text('Hatırlatma'),
-            subtitle: const Text('Son kullanma tarihi yaklaşan ürünleriniz var.'),
+            subtitle:
+                const Text('Son kullanma tarihi yaklaşan ürünleriniz var.'),
             trailing: const Text('1 saat önce'),
           ),
         ],

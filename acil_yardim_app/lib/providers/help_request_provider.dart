@@ -24,7 +24,8 @@ class HelpRequestProvider extends ChangeNotifier {
   }
 
   /// Sends a new emergency help request through the centralized ApiService.
-  Future<bool> sendRequest(BuildContext context, {List<String> selectedItems = const []}) async {
+  Future<bool> sendRequest(BuildContext context,
+      {List<String> selectedItems = const []}) async {
     if (_selectedKit == null) {
       lastError = 'Lütfen bir çanta seçin.';
       notifyListeners();
@@ -66,7 +67,7 @@ class HelpRequestProvider extends ChangeNotifier {
         timestamp: DateTime.now(),
       );
       _requests.insert(0, newRequest);
-      
+
       lastError = null;
       _setLoading(false);
       return true;

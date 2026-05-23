@@ -8,7 +8,10 @@ import { errorHandler } from './middleware/errorHandler.js';
 const app = express();
 
 // Middleware config
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || '*'
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes mapping

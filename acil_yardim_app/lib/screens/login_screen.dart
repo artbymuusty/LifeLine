@@ -34,15 +34,13 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 Text(
-                 'Life Line+',
-                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                   // işte buraya indirdiğin fontun family adını veriyorsun:
-                   fontFamily: 'Augustus',
-                   fontSize: 32,
-                   fontWeight: FontWeight.bold,
-                  ),
-                  
-
+                  'Life Line+',
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                        // işte buraya indirdiğin fontun family adını veriyorsun:
+                        fontFamily: 'Augustus',
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 40),
                 TextField(
@@ -82,57 +80,61 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: kAccentColor,
                     ),
-                    onPressed: _isLoading ? null : () async {
-                      setState(() {
-                        _isLoading = true;
-                        _error = null;
-                      });
+                    onPressed: _isLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              _isLoading = true;
+                              _error = null;
+                            });
 
-                      final tc  = _tcController.text.trim();
-                      final pwd = _pwdController.text;
+                            final tc = _tcController.text.trim();
+                            final pwd = _pwdController.text;
 
-                      try {
-                        // 1️⃣ Giriş sonucunu al
-                        final result = await ApiService.login(
-                          tc: tc,
-                          password: pwd,
-                        );
+                            try {
+                              // 1️⃣ Giriş sonucunu al
+                              final result = await ApiService.login(
+                                tc: tc,
+                                password: pwd,
+                              );
 
-                        // 2️⃣ Token ve kullanıcı bilgilerini ayıkla
-                        final token = result['token'] as String;
-                        final userMap = result['user'] as Map<String, dynamic>;
+                              // 2️⃣ Token ve kullanıcı bilgilerini ayıkla
+                              final token = result['token'] as String;
+                              final userMap =
+                                  result['user'] as Map<String, dynamic>;
 
-                        // Örnek B) Eğer { "data": { "token": "...", "user": { ... } } } dönüyorsa:
-                        // final data = result['data'] as Map<String, dynamic>;
-                        // final token = data['token'] as String;
-                        // final userMap = data['user'] as Map<String, dynamic>;
+                              // Örnek B) Eğer { "data": { "token": "...", "user": { ... } } } dönüyorsa:
+                              // final data = result['data'] as Map<String, dynamic>;
+                              // final token = data['token'] as String;
+                              // final userMap = data['user'] as Map<String, dynamic>;
 
-                        // 4️⃣ User modelini oluştur
-                        final user = User.fromJson(userMap);
+                              // 4️⃣ User modelini oluştur
+                              final user = User.fromJson(userMap);
 
-                        // 5️⃣ Sağlayıcıya login bilgilerini ilet
-                        await auth.login(token, user);
+                              // 5️⃣ Sağlayıcıya login bilgilerini ilet
+                              await auth.login(token, user);
 
-                        // 6️⃣ 'Hesabımı Açık Tut' varsa ayrıca prefs’e kaydet
-                        if (_keepLoggedIn) {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('jwt_token', token);
-                        }
+                              // 6️⃣ 'Hesabımı Açık Tut' varsa ayrıca prefs’e kaydet
+                              if (_keepLoggedIn) {
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setString('jwt_token', token);
+                              }
 
-                        // 7️⃣ Ana ekrana yönlendir
-                        if (!mounted) return;
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (_) => const HomeScreen()),
-                        );
-
-                      } catch (e) {
-                        setState(() {
-                          _error = 'Giriş hatası:\n${e.toString()}';
-                        });
-                      } finally {
-                        if (mounted) setState(() => _isLoading = false);
-                      }
-                    },
+                              // 7️⃣ Ana ekrana yönlendir
+                              if (!mounted) return;
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (_) => const HomeScreen()),
+                              );
+                            } catch (e) {
+                              setState(() {
+                                _error = 'Giriş hatası:\n${e.toString()}';
+                              });
+                            } finally {
+                              if (mounted) setState(() => _isLoading = false);
+                            }
+                          },
                     child: _isLoading
                         ? const SizedBox(
                             width: 24,

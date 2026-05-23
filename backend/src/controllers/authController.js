@@ -1,14 +1,29 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { getPool, sql } from '../config/db.js';
+import { isValidTC, isValidPassword } from '../utils/validators.js';
 
 export async function login(req, res, next) {
   const { tc, password } = req.body;
 
   if (!tc || !password) {
-    return res.status(400).json({
+    return res.status(422).json({
       success: false,
       message: 'TC Kimlik numarası ve şifre gereklidir.'
+    });
+  }
+
+  if (!isValidTC(tc)) {
+    return res.status(422).json({
+      success: false,
+      message: 'Geçersiz TC Kimlik numarası biçimi. TC Kimlik No 11 haneli olmalıdır.'
+    });
+  }
+
+  if (!isValidPassword(password)) {
+    return res.status(422).json({
+      success: false,
+      message: 'Şifre en az 4 karakter uzunluğunda olmalıdır.'
     });
   }
 

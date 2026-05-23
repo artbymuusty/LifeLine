@@ -26,7 +26,6 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => HelpRequestProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-
         FutureProvider<PackageInfo>(
           create: (_) => PackageInfo.fromPlatform(),
           initialData: PackageInfo(
@@ -58,10 +57,10 @@ class AcilYardimApp extends StatelessWidget {
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       initialRoute: auth.isLoggedIn ? '/home' : '/login',
       routes: {
-        '/login':      (_) => const LoginScreen(),
-        '/home':       (_) => const HomeScreen(),
-        '/profile':    (_) => const ProfileScreen(),
-        '/settings':   (_) => const SettingsScreen(),
+        '/login': (_) => const LoginScreen(),
+        '/home': (_) => const HomeScreen(),
+        '/profile': (_) => const ProfileScreen(),
+        '/settings': (_) => const SettingsScreen(),
         '/custom-kit': (_) => const CustomKitCreateScreen(),
       },
     );

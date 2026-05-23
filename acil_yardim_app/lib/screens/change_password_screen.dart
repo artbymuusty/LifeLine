@@ -2,8 +2,6 @@
 
 import 'package:flutter/material.dart';
 
-
-
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({Key? key}) : super(key: key);
 
@@ -19,8 +17,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _isLoading = false;
   String? _error;
 
-
- // Ekran kapatıldığında temizleme işlemi
+  // Ekran kapatıldığında temizleme işlemi
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +36,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 controller: _oldController,
                 decoration: const InputDecoration(labelText: 'Eski Şifre'),
                 obscureText: true,
-                validator: (v) => v == null || v.isEmpty ? 'Eski şifre girin' : null,
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Eski şifre girin' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -48,7 +46,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 obscureText: true,
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Yeni şifre girin';
-                  if (v == _oldController.text) return 'Yeni şifre eskiyle aynı olamaz';
+                  if (v == _oldController.text)
+                    return 'Yeni şifre eskiyle aynı olamaz';
                   return null;
                 },
               ),

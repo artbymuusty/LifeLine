@@ -35,9 +35,11 @@ class HelpRequest {
 
     // Supports both flat lat/lng (from backend responses) and nested location maps
     final double lat = (json['lat'] as num?)?.toDouble() ??
-                       (json['location']?['lat'] as num?)?.toDouble() ?? 0.0;
+        (json['location']?['lat'] as num?)?.toDouble() ??
+        0.0;
     final double lng = (json['lng'] as num?)?.toDouble() ??
-                       (json['location']?['lng'] as num?)?.toDouble() ?? 0.0;
+        (json['location']?['lng'] as num?)?.toDouble() ??
+        0.0;
 
     DateTime timestamp = DateTime.now();
     final rawTs = json['timestamp'];

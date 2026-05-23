@@ -159,6 +159,16 @@ NODE_ENV=development
 
 ---
 
+## 📸 Screenshots & Demo
+> 📝 **Note:** High-fidelity UI screenshots and demo recordings will be cataloged in a future update following automated emulator integration tests.
+
+* **Login Panel:** TC ID check and JWT session initiation.
+* **Emergency Hub:** Quick selection of aid bags and high-speed GPS transmission.
+* **Health Profile:** Detailed allergy and chronic illness logs.
+* **Custom Kit Studio:** Local SQLite tool to catalog personalized rescue items.
+
+---
+
 ## ✍️ Author
 Developed by **Mustafa Özcan** (artbymuusty)
 Licensed under the [MIT License](LICENSE).

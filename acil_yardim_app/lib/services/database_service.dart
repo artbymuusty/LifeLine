@@ -32,7 +32,8 @@ class DatabaseService {
     );
   }
 
-  static Future<void> insertKit(String id, String name, List<String> items) async {
+  static Future<void> insertKit(
+      String id, String name, List<String> items) async {
     final db = await database;
     await db.insert(
       'kits',

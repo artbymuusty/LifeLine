@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import '../models/custom_kit.dart';
 import '../services/database_service.dart';
-import 'info_screen.dart';  // Bilgilendirme ekranı
+import 'info_screen.dart'; // Bilgilendirme ekranı
 
 class CustomKitCreateScreen extends StatefulWidget {
   const CustomKitCreateScreen({Key? key}) : super(key: key);
@@ -39,7 +39,6 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
     'Buscopan': 'Karın ağrısı ve spazmları hafifletir.',
     'Alerji İlaçları': 'Alerjik reaksiyonları hafifletir.',
     'ORS (Oral Rehydration Salt)': 'Sıvı kaybını önlemek için kullanılır.',
-   
   };
 
   bool _saving = false;
@@ -78,7 +77,6 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
     }
   }
 
-
   // Özel yardım çantası oluşturma ekranı
   @override
   Widget build(BuildContext context) {
@@ -105,7 +103,8 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
                   const Expanded(
                     child: Text(
                       '💡 Öneriler ve Bilgilendirme',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
                   IconButton(
@@ -131,8 +130,9 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
                   labelText: 'Çantana bir isim ver',
                   border: UnderlineInputBorder(),
                 ),
-                validator: (val) =>
-                    (val == null || val.trim().isEmpty) ? 'Lütfen bir isim girin.' : null,
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'Lütfen bir isim girin.'
+                    : null,
               ),
             ),
             const SizedBox(height: 24),
@@ -143,7 +143,7 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            
+
             // Malzeme seçim listesi
             Expanded(
               child: ListView(
@@ -151,7 +151,7 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
                   final selected = _selectedItems.contains(item);
                   return Row(
                     children: [
-                      Expanded(child: Text(item)),                     
+                      Expanded(child: Text(item)),
                       IconButton(
                         icon: const Icon(Icons.info_outline),
                         onPressed: () {
@@ -159,8 +159,8 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
                             context: context,
                             builder: (_) => AlertDialog(
                               title: Text(item),
-                              content: Text(
-                                  _itemDescriptions[item] ?? 'Açıklama buraya yazılacak'),
+                              content: Text(_itemDescriptions[item] ??
+                                  'Açıklama buraya yazılacak'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
@@ -205,10 +205,10 @@ class _CustomKitCreateScreenState extends State<CustomKitCreateScreen> {
                         ),
                       )
                     : const Icon(Icons.check),
-                label:
-                    Text(_saving ? 'Kaydediliyor...' : 'Çantayı Oluştur'),
+                label: Text(_saving ? 'Kaydediliyor...' : 'Çantayı Oluştur'),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent, minimumSize: const Size.fromHeight(48)),
+                    backgroundColor: Colors.redAccent,
+                    minimumSize: const Size.fromHeight(48)),
               ),
             ),
           ],

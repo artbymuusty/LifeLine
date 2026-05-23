@@ -1,4 +1,5 @@
 import { getPool, sql } from '../config/db.js';
+import { isValidEmail, isValidPhone } from '../utils/validators.js';
 
 export async function getProfile(req, res, next) {
   const userId = req.user.userId; // Secure: get authenticated user id from JWT
@@ -48,6 +49,20 @@ export async function updateProfile(req, res, next) {
       success: false,
       message: `Eksik alanlar mevcut: ${missing.join(', ')}`,
       missingFields: missing
+    });
+  }
+
+  if (!isValidPhone(phone)) {
+    return res.status(422).json({
+      success: false,
+      message: 'Geçersiz telefon numarası biçimi. Telefon numarası 10-11 haneli rakam olmalıdır.'
+    });
+  }
+
+  if (!isValidEmail(email)) {
+    return res.status(422).json({
+      success: false,
+      message: 'Geçersiz e-posta adresi biçimi.'
     });
   }
 
