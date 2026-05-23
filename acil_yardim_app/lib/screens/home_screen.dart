@@ -1,19 +1,19 @@
 // lib/screens/home_screen.dart
 
-import 'dart:convert';
-import 'package:acil_yardim_app/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
-import '../providers/auth_provider.dart';
+import '../providers/help_request_provider.dart';
 import '../utils/constants.dart';
 import '../services/database_service.dart';
 import '../screens/notifications_screen.dart';
+import '../screens/profile_screen.dart';
 
+// Brand constants for UX consistency
+const String kAppName = 'LifeLine';
+const String kAppSlogan = 'Umut Yanınızda';
 
-// Özel çanta modelini tanımlayalım
+// Local kit representation for custom SQLite kits
 class CustomKit {
   final String id;
   final String name;
@@ -32,7 +32,6 @@ class CustomKit {
   }
 }
 
-// Ana ekran widget'ı
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -40,13 +39,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-
-// State sınıfı
 class _HomeScreenState extends State<HomeScreen> {
   String? _selectedKit;
-  bool _sending = false;
-  String? _error;
-
   final List<CustomKit> _customKits = [];
 
   @override
@@ -55,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadCustomKits();
   }
 
-  // Özel çantaları veritabanından yükleyen metot
+  // Load custom kits from SQLite database
   Future<void> _loadCustomKits() async {
     try {
       final rows = await DatabaseService.getAllKits();
@@ -68,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Çanta silme işlemi
+  // Delete custom kit
   Future<void> _deleteKit(String id) async {
     await DatabaseService.deleteKit(id);
     setState(() {
@@ -76,46 +70,45 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_selectedKit == id) _selectedKit = null;
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Seçilen çanta silindi')),
+      const SnackBar(
+        content: Text('Seçilen çanta başarıyla silindi.'),
+        backgroundColor: Colors.blueGrey,
+      ),
     );
   }
 
-  // Çanta seçimini temizleyen metot
   @override
   Widget build(BuildContext context) {
-    final auth = context.read<AuthProvider>();
-    final user = auth.currentUser!;
+    final helpProvider = context.watch<HelpRequestProvider>();
 
     return Scaffold(
-      // Uygulama çubuğu (AppBar) ayarları
       appBar: AppBar(
-          title: const Text(
-            'Umut Yanınızda',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications), // 🔔 Bildirim ikonu (sol üst)
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.person), // 👤 Profil ikonu (sağ üst)
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                );
-              },
-            ),
-          ],
+        title: const Text(
+          kAppSlogan, // Consistent brand slogan
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(
@@ -130,153 +123,39 @@ class _HomeScreenState extends State<HomeScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (_, index) {
                         if (index == 0) {
-                          // Deprem çantası için özel bilgi veriyoruz
                           return _buildKitCard(
                             icon: Icons.home_repair_service,
                             title: 'Deprem Çantası',
-                            info: ' ',
+                            info: 'Teknik, İlk Yardım ve Gıda Paketleri',
                             value: 'deprem',
                             onInfoTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (_) => AlertDialog(
-                                      title: const Text('Deprem Çantası'),
-                                      content: SingleChildScrollView(
-                                        child: Text(
-                                          '''
-
-  Teknik Eşya Paketi
-_______________________________________
-  • Reflektörlü Özel İkaz Yeleği
-  • PN5 İş Eldiveni
-  • 5 m Çok Amaçlı İp
-  • El Feneri
-  • Çok Amaçlı İsviçre Çakı 
-  • 2 Kutu Kibrit
-  • 6 Adet Pil
-  • Metal Düdük
-  • Tamir Bandı
-  • Ventilli Maske
-  
-  İlk Yardım Seti
-_______________________________________
-  • 5 Adet Steril Gaz Kompres (7,5×7,5 cm)
-  • 2 Paket Hidrofil Sargı Bezi
-  • 20 ml Batikon Antiseptik Solüsyon
-  • 10 Adet Yara Bandı
-  • 3 Yara Örtüsü
-  • 5 Adet Cilt Temizleme Mendili
-  • 10 Adet Çengelli İğne
-  • Medikal Yapıştırma Bandı (Flaster)
-  • 4 Adet Cilt Temizleme Mendili 
-  • Elastik Sargı Bandaj (Lastik)
-  • Boyun Ateli (Boyunluk)
-  • Anında Soğuk Kompres
-  • 2 Adet Plastik Eldiven
-  • Termal (Uzay) Battaniye
-  • Mini El Feneri
-  • Makas
-  
-  Gıda Paketi
-_______________________________________
-  • 140 g Ton Balığı
-  • 400 g Fasulye Pilaki
-  • 2 × 500 ml Su
-  
-  Hijyen Paketi
-_______________________________________
-  • 10’lu Islak Mendil
-  • 10’lu Peçete
-  • 15 g Sabun
-  • 1 Adet Diş Fırçası
-  • 10 g Diş Macunu
-  
-  • Polar Battaniye (140 × 185 cm)
-  • 1 Adet Tükenmez Kalem
-  • 1 Adet Not Defteri
-
-            ''',
-                                          style: const TextStyle(fontSize: 14),
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(context),
-                                          child: const Text('Kapat'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-
+                              _showKitDialog(
+                                'Deprem Çantası',
+                                '''Teknik Eşya Paketi\n• Reflektörlü Özel İkaz Yeleği\n• İş Eldiveni\n• El Feneri ve Düdük\n• Çok Amaçlı Çakı\n\nİlk Yardım Seti\n• Steril Gaz Kompres\n• Sargı Bezi ve Yara Bandı\n• Antiseptik Solüsyon\n• Termal Battaniye\n\nGıda & Hijyen\n• Konserve Balık ve Pilaki\n• İçme Suyu\n• Islak Mendil ve Peçete''',
+                              );
+                            },
                           );
                         } else if (index == 1) {
-                          // Sel çantası için özel bilgi veriyoruz
                           return _buildKitCard(
                             icon: Icons.home_repair_service,
                             title: 'Sel Çantası',
-                            info: ' ',
+                            info: 'Su Geçirmez Malzemeler ve Koruyucu Ekipmanlar',
                             value: 'sel',
                             onInfoTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (_) => AlertDialog(
-                                      title: const Text('Sel Çantası'),
-                                      content: SingleChildScrollView(
-                                        child: Text(
-                                          '''
-
-  Eşya Paketi
-_______________________________________
-  • Su geçirmez el feneri 
-  • İlk yardım kiti 
-  • Hijyen kiti 
-  • Çizmeler
-            ''',
-                                  
-                                   style: const TextStyle(fontSize: 14),
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(context),
-                                          child: const Text('Kapat'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                              _showKitDialog(
+                                'Sel Çantası',
+                                '''Eşya Paketi\n• Su geçirmez el feneri\n• İlk yardım kiti\n• Hijyen kiti\n• Çizmeler ve Yağmurluk''',
+                              );
+                            },
                           );
                         } else {
                           final kit = _customKits[index - 2];
-                          // Özel çantalar için kart oluşturuyoruz (Silmek için buton ekliyoruz)
                           return Row(
                             children: [
                               Expanded(child: _buildCustomKitCard(kit)),
                               IconButton(
                                 icon: const Icon(Icons.delete, color: Colors.redAccent),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (_) => AlertDialog(
-                                      title: const Text('Emin misin?'),
-                                      content: const Text('Seçilen çanta siliniyor'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(context),
-                                          child: const Text('Hayır'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                            _deleteKit(kit.id);
-                                          },
-                                          child: const Text('Evet'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                onPressed: () => _confirmDelete(kit),
                               ),
                             ],
                           );
@@ -284,8 +163,6 @@ _______________________________________
                       },
                     ),
                   ),
-
-                  // Çanta seçimi için butonlar
                   Align(
                     alignment: Alignment.centerRight,
                     child: FloatingActionButton.extended(
@@ -302,7 +179,7 @@ _______________________________________
                         await _loadCustomKits();
                         if (result is CustomKit) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Çantanız başarıyla oluşturuldu')),
+                            const SnackBar(content: Text('Özel çantanız başarıyla oluşturuldu.')),
                           );
                         }
                       },
@@ -310,19 +187,19 @@ _______________________________________
                       label: const Text('Özel Çanta Ekle'),
                     ),
                   ),
-
-                  if (_error != null) ...[
+                  if (helpProvider.lastError != null) ...[
                     const SizedBox(height: 8),
-                    Text(_error!, style: const TextStyle(color: Colors.red)),
+                    Text(
+                      helpProvider.lastError!,
+                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
-
                   const SizedBox(height: 16),
                 ],
               ),
             ),
           ),
-
-          // Çanta gönderme butonu
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: SizedBox(
@@ -333,17 +210,20 @@ _______________________________________
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: const StadiumBorder(),
                 ),
-                onPressed: _sending ? null : _sendHelp,
-                child: _sending
+                onPressed: helpProvider.isLoading ? null : _sendHelp,
+                child: helpProvider.isLoading
                     ? const SizedBox(
                         height: 23,
                         width: 23,
                         child: CircularProgressIndicator(
-                          color: Color.fromARGB(255, 0, 0, 0),
+                          color: Colors.white,
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text('Çanta Gönder', style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold)),
+                    : const Text(
+                        'Çanta Gönder', 
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
               ),
             ),
           ),
@@ -352,29 +232,74 @@ _______________________________________
     );
   }
 
-  // Çanta kartlarını oluşturan yardımcı metot
+  // Display details of standard kits
+  void _showKitDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: SingleChildScrollView(child: Text(content)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Kapat'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Confirmation dialog before deleting a custom kit
+  void _confirmDelete(CustomKit kit) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Emin misin?'),
+        content: Text('"${kit.name}" çantası silinecektir. Onaylıyor musunuz?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Hayır'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteKit(kit.id);
+            },
+            child: const Text('Evet'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Standard kit card widget builder
   Widget _buildKitCard({
     required IconData icon,
     required String title,
     String? info,
     required String value,
-    List<PopupMenuEntry>? menuItems,
     VoidCallback? onInfoTap,
   }) {
     final selected = value == _selectedKit;
     return GestureDetector(
       onTap: () => setState(() {
         _selectedKit = value;
-        _error = null;
       }),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: selected ? Colors.redAccent.shade100 : Colors.white,
-          border: Border.all(color: selected ? kAccentColor : Colors.grey),
+          color: selected ? Colors.redAccent.shade100.withOpacity(0.3) : Colors.white,
+          border: Border.all(color: selected ? kAccentColor : Colors.grey.shade300),
           borderRadius: BorderRadius.circular(12),
-          boxShadow: const [BoxShadow(blurRadius: 4, color: Colors.black12)],
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 4, 
+              color: selected ? kAccentColor.withOpacity(0.1) : Colors.black12,
+              offset: const Offset(0, 2),
+            )
+          ],
         ),
         child: Row(
           children: [
@@ -385,8 +310,10 @@ _______________________________________
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text(info ?? '', style: const TextStyle(fontSize: 14)),
+                  if (info != null && info.trim().isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(info, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  ],
                 ],
               ),
             ),
@@ -401,12 +328,12 @@ _______________________________________
     );
   }
 
-  // Özel çanta kartı oluşturan metot
+  // Custom kit card builder
   Widget _buildCustomKitCard(CustomKit kit) {
     return _buildKitCard(
       icon: Icons.backpack,
       title: kit.name,
-      info: ' ',
+      info: 'Özel Oluşturulmuş Çanta',
       value: kit.id,
       onInfoTap: () async {
         final rows = await DatabaseService.getAllKits();
@@ -414,127 +341,86 @@ _______________________________________
         final items = (match['items'] ?? '').toString().split(',').where((e) => e.isNotEmpty).join(', ');
 
         showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(
-                kit.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'İçerik Listesi:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  const Divider(),
-                  Text(items), // 'items' String ise 
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Kapat'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              kit.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'İçerik Listesi:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
+                const Divider(),
+                Text(items.isEmpty ? 'Herhangi bir malzeme eklenmedi.' : items),
               ],
             ),
-          );
-        },
-      menuItems: [
-        PopupMenuItem(
-          child: const Text('Sil'),
-          onTap: () {
-            Future.delayed(Duration.zero, () {
-              showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text('Emin misin?'),
-                  content: const Text('Seçilen çanta siliniyor'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Hayır'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _deleteKit(kit.id);
-                      },
-                      child: const Text('Evet'),
-                    ),
-                  ],
-                ),
-              );
-            });
-          },
-        ),
-      ],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Kapat'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  // Çanta gönderme işlemini gerçekleştiren metot
+  // Encapsulated dispatching method delegating requests to HelpRequestProvider
   Future<void> _sendHelp() async {
     if (_selectedKit == null) {
-      setState(() => _error = 'Lütfen önce bir çanta seçin.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Lütfen önce bir çanta seçin.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
       return;
     }
 
-    setState(() {
-      _sending = true;
-      _error = null;
-    });
-
-    try {
-      final auth = context.read<AuthProvider>();
-      final user = auth.currentUser!;
-      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      final ts = DateTime.now().toUtc().toIso8601String();
-
-      // Eğer özel bir çanta seçildiyse, içindeki öğeleri alıyoruz
-      List<String> selectedItems = [];
-      if (_selectedKit!.startsWith('ozel')) {
+    // Retrieve selected custom kit items if custom kit is chosen
+    List<String> selectedItems = [];
+    if (_selectedKit!.startsWith('ozel')) {
+      try {
         final rows = await DatabaseService.getAllKits();
         final match = rows.firstWhere((e) => e['id'] == _selectedKit, orElse: () => {});
         if (match.isNotEmpty && match['items'] != null) {
-          selectedItems = (match['items'] as String).split(',');
+          selectedItems = (match['items'] as String).split(',').where((e) => e.isNotEmpty).toList();
         }
+      } catch (e) {
+        debugPrint('Custom items parse error: $e');
       }
+    }
 
-      // Eğer deprem ya da sel çantası seçildiyse, öğeleri sabit olarak ekliyoruz
-      final body = {
-        'kitType': _selectedKit,
-        'userId': user.id,
-        'lat': pos.latitude,
-        'lng': pos.longitude,
-        'timestamp': ts,
-        if (selectedItems.isNotEmpty) 'selectedItems': selectedItems,
-      };
+    final provider = context.read<HelpRequestProvider>();
+    provider.selectedKit = _selectedKit;
+    
+    // Dispatch call through state provider pipeline
+    final success = await provider.sendRequest(context, selectedItems: selectedItems);
 
-      final uri = Uri.parse('$kBaseUrl$kHelpRequestEndpoint');
-      final resp = await http.post(uri,
-       headers: {'Content-Type': 'application/json'},
-       body: jsonEncode(body),
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('🚨 Yardım çağrınız ve konumunuz başarıyla gönderildi.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
+        ),
       );
-
-      // önce status code’a bakıyoruz
-      if (resp.statusCode == 200 || resp.statusCode == 201) {
-      } else {
-        // hata; content-type’a göre JSON decode ya da raw body göster
-        final ct = resp.headers['content-type'] ?? '';
-        String errMsg;
-        if (ct.contains('application/json')) {
-          final data = jsonDecode(resp.body);
-          errMsg = data['error'] ?? resp.body;
-        } else {
-          errMsg = resp.body;                      // HTML’i direkt burada kullanıyoruz
-        }
-        throw Exception('Sunucu hatası ${resp.statusCode}: $errMsg');
-      }
-    } catch (e) {
-      setState(() => _error = 'Hata: ${e.toString()}');
-    } finally {
-      setState(() => _sending = false);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(provider.lastError ?? 'Çağrı gönderilemedi. Lütfen tekrar deneyin.'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 5),
+        ),
+      );
     }
   }
 }

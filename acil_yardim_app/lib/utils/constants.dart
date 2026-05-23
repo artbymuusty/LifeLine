@@ -2,22 +2,18 @@
 
 import 'package:flutter/material.dart';
 
-/// API’nin kök adresi
-/// - Web için `localhost`
-/// - Android emülatör için `10.0.2.2`
-/// - Gerçek cihaz için backend’in IP adresi
-// const String kBaseUrl = 'http://localhost:3000';
-// Gerçek telefon kullanıyorsan (örneğin PC’in IP’si 192.168.1.42 ise):
-
-
-const kBaseUrl = 'http://192.168.1.103:3000';
-
+/// API’nin kök adresi - dart-define ile dışarıdan alınır, varsayılan olarak yerel emülatör kullanılır.
+/// Çalıştırma örneği: flutter run --dart-define=API_BASE_URL=http://localhost:3000
+const String kBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://10.0.2.2:3000',
+);
 
 /// Yardım çağrıları endpoint’i
 const String kHelpRequestEndpoint = '/help_requests';
 
+/// Profil güncelleme endpoint'i
+const String kProfileEndpoint = '/user/profile';
+
 /// Uygulamanın vurgu rengi
 const kAccentColor = Colors.redAccent;
-
-// Profil güncelleme için yeni bir sabit ekleyelim:
-const String kProfileEndpoint = '/user/profile'; 

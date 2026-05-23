@@ -1,7 +1,4 @@
-
-
 import 'package:flutter/material.dart';
-import '../utils/constants.dart';
 
 // Bilgilendirme ekranı
 class InfoScreen extends StatelessWidget {

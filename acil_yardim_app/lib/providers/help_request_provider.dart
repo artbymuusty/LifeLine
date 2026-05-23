@@ -8,7 +8,7 @@ import '../models/help_request.dart';
 import '../services/api_service.dart';
 import 'auth_provider.dart';
 
-/// Uygulamanın "Yardım Çağrısı" işlevselliğini yöneten provider.
+/// Provider managing emergency help request operations and state
 class HelpRequestProvider extends ChangeNotifier {
   String? _selectedKit;
   bool isLoading = false;
@@ -23,55 +23,61 @@ class HelpRequestProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Yeni bir yardım çağrısı oluşturur.
-  /// Seçili kit, koordinatlar ve zaman damgasıyla bir HelpRequest inşa
-  /// eder, API üzerinden gönderir ve listeye ekler.
-  Future<void> sendRequest(BuildContext context) async {
+  /// Sends a new emergency help request through the centralized ApiService.
+  Future<bool> sendRequest(BuildContext context, {List<String> selectedItems = const []}) async {
     if (_selectedKit == null) {
       lastError = 'Lütfen bir çanta seçin.';
       notifyListeners();
-      return;
+      return false;
     }
 
     _setLoading(true);
 
     try {
-      // 1️⃣ Kullanıcı ve token bilgilerini al
       final auth = context.read<AuthProvider>();
       final user = auth.currentUser!;
       final token = auth.token!;
 
-      // 2️⃣ Cihaz konumunu edin
+      // 1. Retrieve the high accuracy GPS coordinates
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // 3️⃣ Yardım çağrısı modelini oluştur
+      final ts = DateTime.now().toUtc().toIso8601String();
+
+      // 2. Call Refactored API Service
+      await ApiService.sendHelpRequest(
+        kitType: _selectedKit!,
+        lat: position.latitude,
+        lng: position.longitude,
+        timestamp: ts,
+        token: token,
+        selectedItems: selectedItems,
+      );
+
+      // 3. Insert local success representation to top of list
       final newRequest = HelpRequest(
         id: null,
         kitType: _selectedKit!,
-        userId: user.id!,                   // currentUser.id nullable olabilir; ! ile garanti ettik
+        userId: user.id ?? 0,
         user: user,
         lat: position.latitude,
         lng: position.longitude,
         timestamp: DateTime.now(),
       );
-
-      // 4️⃣ API aracılığıyla sunucuya gönder
-      await ApiService.sendHelpRequest(newRequest, token);
-
-      // 5️⃣ Başarılıysa listeye başa ekle
       _requests.insert(0, newRequest);
+      
       lastError = null;
-    } catch (error) {
-      // Hata mesajını yakala ve göster
-      lastError = error.toString();
-    } finally {
       _setLoading(false);
+      return true;
+    } catch (error) {
+      lastError = error.toString().replaceAll('Exception: ', '');
+      _setLoading(false);
+      return false;
     }
   }
 
-  /// Sunucudan mevcut yardım çağrılarını çeker ve listeyi günceller.
+  /// Pulls the existing help requests from backend (restricted)
   Future<void> fetchRequests(BuildContext context) async {
     _setLoading(true);
 
@@ -85,17 +91,15 @@ class HelpRequestProvider extends ChangeNotifier {
 
       lastError = null;
     } catch (error) {
-      lastError = error.toString();
+      lastError = error.toString().replaceAll('Exception: ', '');
     } finally {
       _setLoading(false);
     }
   }
 
-  /// İç durumun yükleniyor olup olmadığını ve hata bilgisini sıfırlar.
   void _setLoading(bool value) {
     isLoading = value;
     if (value) {
-      // Yeni bir işlem başladığında önceki hataları temizle
       lastError = null;
     }
     notifyListeners();

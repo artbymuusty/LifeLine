@@ -1,12 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
-import '../utils/constants.dart';
 import '../providers/auth_provider.dart';
+import '../services/api_service.dart';
 import 'settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -20,7 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _saving = false;
   bool wantsToHelp = false;
   bool locationPermission = true;
-  String lastKnownLocation = ''; // "lat, lng" veya hata mesajı
+  String lastKnownLocation = ''; // "lat, lng" or error message
 
   final TextEditingController nameController  = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -33,6 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadProfile();
   }
 
+  // Retrieve current location safely showing fallback on error
   Future<void> _loadLocation() async {
     try {
       final pos = await _determinePosition();
@@ -65,24 +64,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Fetch profile via ApiService using Bearer Token
   Future<void> _loadProfile() async {
     try {
       final auth = context.read<AuthProvider>();
-      final user = auth.currentUser!;
-      final uri = Uri.parse('$kBaseUrl$kProfileEndpoint?userId=${user.id}');
-      final resp = await http.get(uri);
-      if (resp.statusCode == 200) {
-        final data = jsonDecode(resp.body) as Map<String, dynamic>;
-        setState(() {
-          nameController.text  = data['name']  ?? '';
-          phoneController.text = data['phone'] ?? '';
-          emailController.text = data['email'] ?? '';
-        });
-      } else {
-        debugPrint('Profil yükleme hatası ${resp.statusCode}: ${resp.body}');
-      }
+      final token = auth.token;
+      if (token == null) return;
+
+      final data = await ApiService.fetchProfile(token);
+      setState(() {
+        nameController.text  = data['name']  ?? '';
+        phoneController.text = data['phone'] ?? '';
+        emailController.text = data['email'] ?? '';
+      });
     } catch (e) {
       debugPrint('Profil yüklerken hata: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Profil yüklenemedi: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -119,7 +123,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Avatar ve isim
             Center(
               child: Column(
                 children: [
@@ -137,7 +140,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Telefon numarası: sadece rakam, en fazla 11 hane
             TextField(
               controller: phoneController,
               decoration: const InputDecoration(
@@ -152,7 +154,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 16),
 
-            // E-posta
             TextField(
               controller: emailController,
               decoration: const InputDecoration(labelText: 'E-posta Adresi'),
@@ -160,7 +161,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const Divider(height: 32),
 
-            // Konum bilgisi
             const Text(
               'Konum Bilgisi',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -176,7 +176,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const Divider(height: 32),
 
-            // Gönüllü olma tercihi
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -193,36 +192,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Save profile updates via ApiService using Bearer Token
   Future<void> _saveProfile() async {
     setState(() => _saving = true);
     try {
       final auth = context.read<AuthProvider>();
-      final user = auth.currentUser!;
-      final uri = Uri.parse('$kBaseUrl$kProfileEndpoint');
-      final body = {
-        'userId': user.id,
-        'name'  : nameController.text.trim(),
-        'phone' : phoneController.text.trim(),
-        'email' : emailController.text.trim(),
-      };
-      final resp = await http.put(
-        uri,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
+      final token = auth.token;
+      if (token == null) throw Exception('Yetkilendirme anahtarı bulunamadı.');
+
+      await ApiService.updateProfile(
+        token: token,
+        name: nameController.text.trim(),
+        phone: phoneController.text.trim(),
+        email: emailController.text.trim(),
       );
-      if (resp.statusCode >= 200 && resp.statusCode < 300) {
+
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profil başarıyla güncellendi')),
+          const SnackBar(
+            content: Text('Profil başarıyla güncellendi.'),
+            backgroundColor: Colors.green,
+          ),
         );
-      } else {
-        throw Exception('Sunucu hatası ${resp.statusCode}: ${resp.body}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hata: $e'), duration: const Duration(seconds: 5)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Hata: ${e.toString().replaceAll('Exception: ', '')}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     } finally {
-      setState(() => _saving = false);
+      if (mounted) setState(() => _saving = false);
     }
   }
 }

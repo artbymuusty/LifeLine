@@ -14,7 +14,6 @@ import 'screens/profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/custom_kit_create_screen.dart';
 
-import 'utils/constants.dart';
 import 'themes/app_theme.dart';
 
 void main() {

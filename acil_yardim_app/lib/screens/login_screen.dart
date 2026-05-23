@@ -92,17 +92,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       final pwd = _pwdController.text;
 
                       try {
-                        // 1️⃣ Ham Map’i al
+                        // 1️⃣ Giriş sonucunu al
                         final result = await ApiService.login(
                           tc: tc,
                           password: pwd,
                         );
 
-                        // 2️⃣ Konsola basıp JSON yapısını görün
-                        print('LOGIN RESULT MAP → $result');
-
-                        // 3️⃣ JSON yapınıza göre token ve userMap’i ayıklayın:
-                        // Örnek A) Düz dönüyorsa: { "token": "...", "user": { ... } }
+                        // 2️⃣ Token ve kullanıcı bilgilerini ayıkla
                         final token = result['token'] as String;
                         final userMap = result['user'] as Map<String, dynamic>;
 

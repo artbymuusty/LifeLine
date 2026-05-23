@@ -3,18 +3,16 @@
 import '../models/user.dart';
 
 class HelpRequest {
-  final int? id;           // artık nullable
+  final int? id;
   final String kitType;
   final int userId;
-  final User? user;        // Nested user objesi varsa buraya gelir
+  final User? user;
   final double lat;
   final double lng;
   final DateTime timestamp;
 
-
-  /// Yardım çağrısı modeli
   HelpRequest({
-    this.id,               // artık required değil
+    this.id,
     required this.kitType,
     required this.userId,
     this.user,
@@ -23,39 +21,34 @@ class HelpRequest {
     required this.timestamp,
   });
 
-  /// JSON'dan HelpRequest objesi oluşturur
+  /// factory to parse HelpRequest from JSON securely
   factory HelpRequest.fromJson(Map<String, dynamic> json) {
-    // 1) id
     final id = (json['id'] as num?)?.toInt();
-
-    // 2) kitType
     final kitType = (json['kitType'] ?? json['kit_type']) as String? ?? '';
 
-    //  3) userId
     final userJson = json['user'] as Map<String, dynamic>?;
     final userId = userJson != null
         ? (userJson['id'] as num?)?.toInt() ?? 0
         : (json['user_id'] as num?)?.toInt() ?? 0;
 
-    // 4) User objesi
     final user = userJson != null ? User.fromJson(userJson) : null;
 
-    // 5) Lat / Lng
-    final lat = (json['location']?['lat'] as num?)?.toDouble() ?? 0.0;
-    final lng = (json['location']?['lng'] as num?)?.toDouble() ?? 0.0;
+    // Supports both flat lat/lng (from backend responses) and nested location maps
+    final double lat = (json['lat'] as num?)?.toDouble() ??
+                       (json['location']?['lat'] as num?)?.toDouble() ?? 0.0;
+    final double lng = (json['lng'] as num?)?.toDouble() ??
+                       (json['location']?['lng'] as num?)?.toDouble() ?? 0.0;
 
-    // 6) Timestamp: 
+    DateTime timestamp = DateTime.now();
     final rawTs = json['timestamp'];
-    final  timestamp;
-    if (rawTs is! String) {
-      timestamp = rawTs is DateTime
-            ? rawTs
-            : DateTime.now();
-    } else {
-      timestamp = DateTime.parse(rawTs);
+    if (rawTs != null) {
+      if (rawTs is String) {
+        timestamp = DateTime.parse(rawTs);
+      } else if (rawTs is DateTime) {
+        timestamp = rawTs;
+      }
     }
 
-    // 7) Tüm alanları kullanarak HelpRequest objesi oluştur
     return HelpRequest(
       id: id,
       kitType: kitType,
@@ -67,13 +60,10 @@ class HelpRequest {
     );
   }
 
-  /// Kısaca hangi kiti çağırdığınızı gösterir
   String get description => kitType;
 
-  // Yardım çağrısını JSON formatına dönüştürür
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{
-      // id sadece varsa gönderilsin
       if (id != null) 'id': id,
       'kitType': kitType,
       'user_id': userId,

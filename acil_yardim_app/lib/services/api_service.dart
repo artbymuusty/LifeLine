@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
 import '../models/help_request.dart';
 
-// API servis sınıfı, sunucu ile iletişim kurmak için gerekli HTTP isteklerini yapar.
+/// Centralized API Service for all networking communications
 class ApiService {
-  /// TC/şifre ile giriş yapar, başarılıysa Map içinde hem token hem user verisini döner.
+  /// User authentication login request. Returns data payload containing token and user info.
   static Future<Map<String, dynamic>> login({
     required String tc,
     required String password,
@@ -19,54 +19,139 @@ class ApiService {
       body: jsonEncode({'tc': tc, 'password': password}),
     );
 
-    // Debug için ham yanıtı konsola yazdırın
-    print('LOGIN RESPONSE ➜ ${response.body}');
-
     if (response.statusCode == 200) {
-      // JSON nesnesini Map olarak döndürün; parsing çağrı tarafında yapılacak
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      if (body['success'] == true && body['data'] != null) {
+        return body['data'] as Map<String, dynamic>;
+      }
+      throw Exception(body['message'] ?? 'Giriş başarısız.');
     } else {
-      // Hata mesajında gerçek kodu ve gövdeyi kullanın
-      throw Exception(
-        'Giriş başarısız: ${response.statusCode} - ${response.body}',
-      );
+      String errMsg = 'Giriş başarısız.';
+      try {
+        final body = jsonDecode(response.body);
+        errMsg = body['message'] ?? errMsg;
+      } catch (_) {}
+      throw Exception('$errMsg (Kod: ${response.statusCode})');
     }
   }
 
-  /// Yeni bir yardım çağrısı gönderir.
-  /// [hr] → gönderilecek çağrı objesi, [token] → Bearer token
-  static Future<void> sendHelpRequest(HelpRequest hr, String token) async {
+  /// Sends a new emergency help request.
+  static Future<void> sendHelpRequest({
+    required String kitType,
+    required double lat,
+    required double lng,
+    required String timestamp,
+    required String token,
+    List<String> selectedItems = const [],
+  }) async {
     final url = Uri.parse('$kBaseUrl$kHelpRequestEndpoint');
+    final body = {
+      'kitType': kitType,
+      'lat': lat,
+      'lng': lng,
+      'timestamp': timestamp,
+      if (selectedItems.isNotEmpty) 'selectedItems': selectedItems,
+    };
+
     final response = await http.post(
       url,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(hr.toJson()),
+      body: jsonEncode(body),
     );
 
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Yardım çağrısı başarısız (${response.statusCode}): ${response.body}',
-      );
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      String errMsg = 'Yardım çağrısı gönderilemedi.';
+      try {
+        final body = jsonDecode(response.body);
+        errMsg = body['message'] ?? errMsg;
+      } catch (_) {}
+      throw Exception('$errMsg (Kod: ${response.statusCode})');
     }
   }
 
-  /// Sunucudan gelen tüm yardım çağrılarını çeker.
-      static Future<List<HelpRequest>> fetchHelpRequests(String token) async {
-        // DİKKAT: $kBaseUrl mutlaka port içermeli
-        final url = Uri.parse('$kBaseUrl$kHelpRequestEndpoint?sort=timestamp');
-        final response = await http.get(
-          url,
-          headers: { 'Authorization': 'Bearer $token' },
-        );
+  /// Retrieves emergency help request logs (Restricted: Responders/Admins only)
+  static Future<List<HelpRequest>> fetchHelpRequests(String token) async {
+    final url = Uri.parse('$kBaseUrl$kHelpRequestEndpoint');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
 
     if (response.statusCode == 200) {
-    final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => HelpRequest.fromJson(e)).toList();
-  } else {
-    throw Exception('Çağrılar alınamadı (${response.statusCode}): ${response.body}');
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final list = body['data'] as List<dynamic>? ?? [];
+      return list.map((e) => HelpRequest.fromJson(e)).toList();
+    } else {
+      String errMsg = 'Geçmiş çağrılar alınamadı.';
+      try {
+        final body = jsonDecode(response.body);
+        errMsg = body['message'] ?? errMsg;
+      } catch (_) {}
+      throw Exception('$errMsg (Kod: ${response.statusCode})');
+    }
   }
+
+  /// Fetches the profile details of the authenticated user
+  static Future<Map<String, dynamic>> fetchProfile(String token) async {
+    final url = Uri.parse('$kBaseUrl$kProfileEndpoint');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      if (body['success'] == true && body['data'] != null) {
+        return body['data'] as Map<String, dynamic>;
+      }
+      throw Exception(body['message'] ?? 'Profil bilgileri alınamadı.');
+    } else {
+      String errMsg = 'Profil yüklenemedi.';
+      try {
+        final body = jsonDecode(response.body);
+        errMsg = body['message'] ?? errMsg;
+      } catch (_) {}
+      throw Exception('$errMsg (Kod: ${response.statusCode})');
+    }
+  }
+
+  /// Updates the profile details of the authenticated user
+  static Future<void> updateProfile({
+    required String token,
+    required String name,
+    required String phone,
+    required String email,
+  }) async {
+    final url = Uri.parse('$kBaseUrl$kProfileEndpoint');
+    final response = await http.put(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'name': name,
+        'phone': phone,
+        'email': email,
+      }),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      String errMsg = 'Profil güncellenemedi.';
+      try {
+        final body = jsonDecode(response.body);
+        errMsg = body['message'] ?? errMsg;
+      } catch (_) {}
+      throw Exception('$errMsg (Kod: ${response.statusCode})');
+    }
   }
 }
