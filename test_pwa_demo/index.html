@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LifeLine Demo - Umut Yanınızda</title>
+  
+  <!-- SEO & Mobile PWA Metas -->
+  <meta name="description" content="LifeLine Emergency Help Request System Premium Interactive PWA Demo.">
+  <meta name="theme-color" content="#ff4d4d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LifeLine">
+  
+  <!-- Manifest Link -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background Glows for Premium Aesthetics -->
+  <div class="glow-bg"></div>
+
+  <!-- Mobile Device Mockup Wrapper for Desktop Displays -->
+  <div class="phone-mockup">
+    <div class="phone-notch"></div>
+    <div class="app-container">
+
+      <!-- ================================================== -->
+      <!-- 1. LOGIN SCREEN -->
+      <!-- ================================================== -->
+      <section id="screen-login" class="app-screen active">
+        <div class="login-wrapper">
+          <div class="brand-header">
+            <div class="brand-logo-container">
+              <svg viewBox="0 0 24 24" class="pulse-logo">
+                <path fill="#ffffff" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                <path fill="none" stroke="#ff4d4d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 9h3l2 4 2-8 2 4h3" />
+              </svg>
+            </div>
+            <h1 class="brand-title">LifeLine<span>+</span></h1>
+            <p class="brand-subtitle">Umut Yanınızda</p>
+          </div>
+
+          <div class="login-form">
+            <div class="input-group">
+              <label for="tc-input">TC Kimlik No</label>
+              <div class="input-field">
+                <svg class="input-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <input type="text" id="tc-input" value="11111111111" placeholder="TC Kimlik Numaranız" maxlength="11">
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="pwd-input">Şifre</label>
+              <div class="input-field">
+                <svg class="input-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                <input type="password" id="pwd-input" value="demo123" placeholder="Şifreniz">
+              </div>
+            </div>
+
+            <div class="remember-me">
+              <input type="checkbox" id="keep-logged" checked>
+              <label for="keep-logged">Beni Hatırla</label>
+            </div>
+
+            <button id="btn-login" class="btn btn-primary">Giriş Yap</button>
+            <button id="btn-demo-login" class="btn btn-outlined">
+              <svg viewBox="0 0 24 24" class="btn-icon"><path fill="currentColor" d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+              Demo Hesabı Kullan
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================== -->
+      <!-- 2. HOME SCREEN -->
+      <!-- ================================================== -->
+      <section id="screen-home" class="app-screen">
+        <header class="screen-header">
+          <div class="header-profile">
+            <div class="avatar-glow">
+              <div class="header-avatar">MÖ</div>
+            </div>
+            <div class="header-user-info">
+              <h3>Mustafa Özcan</h3>
+              <p>Deprem Bölgesi / Aktif</p>
+            </div>
+          </div>
+          <button class="notification-btn">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1-1.5-1s-1.5.17-1.5 1v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            <span class="badge"></span>
+          </button>
+        </header>
+
+        <div class="home-scroll-container">
+          <!-- Live Status Card -->
+          <div class="status-card">
+            <div class="status-indicator">
+              <span class="status-dot pulsing"></span>
+              <h4>Güvendesiniz / Hazır</h4>
+            </div>
+            <p class="status-desc">Acil durumlarda butona basarak GPS koordinatlarınızı ve sağlık profilinizi anında ekiplere iletebilirsiniz.</p>
+          </div>
+
+          <!-- The Pulse Emergency Alert CTA -->
+          <div class="emergency-trigger-area">
+            <div class="pulse-ring ring-1"></div>
+            <div class="pulse-ring ring-2"></div>
+            <button id="btn-emergency-trigger" class="emergency-button">
+              <svg viewBox="0 0 24 24" class="emergency-logo">
+                <path fill="#ffffff" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              <span>Acil Yardım<br>Gönder</span>
+            </button>
+          </div>
+
+          <!-- Interactive Micro Chips -->
+          <div class="system-chips">
+            <div class="status-chip">
+              <div class="chip-icon bg-red">
+                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              </div>
+              <div class="chip-info">
+                <h5>Konum Aktif</h5>
+                <p>37.4220, -122.0841</p>
+              </div>
+            </div>
+
+            <div class="status-chip">
+              <div class="chip-icon bg-green">
+                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+              </div>
+              <div class="chip-info">
+                <h5>Sağlık Profili</h5>
+                <p>Kayıtlı (A+ / Astım)</p>
+              </div>
+            </div>
+
+            <div class="status-chip" id="chip-kit-status">
+              <div class="chip-icon bg-blue">
+                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+              </div>
+              <div class="chip-info">
+                <h5>Acil Çanta</h5>
+                <p id="txt-selected-kit">Seçili (Deprem)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================== -->
+      <!-- 3. PROFILE SCREEN -->
+      <!-- ================================================== -->
+      <section id="screen-profile" class="app-screen">
+        <header class="subpage-header">
+          <h2>Kişisel Profilim</h2>
+        </header>
+
+        <div class="profile-scroll-container">
+          <div class="profile-card">
+            <div class="profile-avatar-large">MÖ</div>
+            <div class="input-group-static">
+              <label>Ad Soyad</label>
+              <input type="text" id="prof-name" class="editable-field" value="Mustafa Özcan">
+            </div>
+            <div class="input-group-static">
+              <label>Telefon Numarası</label>
+              <input type="text" id="prof-phone" class="editable-field" value="05550000000">
+            </div>
+            <div class="input-group-static">
+              <label>E-posta Adresi</label>
+              <input type="text" id="prof-email" class="editable-field" value="demo@lifeline.com">
+            </div>
+            <button id="btn-save-profile" class="btn btn-save">
+              <svg viewBox="0 0 24 24" class="btn-icon"><path fill="currentColor" d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+              Bilgileri Güncelle
+            </button>
+          </div>
+
+          <div class="health-card">
+            <h4 class="card-section-title">🩺 Medikal Sağlık Özeti</h4>
+            <div class="health-grid">
+              <div class="health-item">
+                <span class="health-label">Kan Grubu</span>
+                <span class="health-val text-red">A+</span>
+              </div>
+              <div class="health-item">
+                <span class="health-label">Kronik Hastalık</span>
+                <span class="health-val">Astım (Asthma)</span>
+              </div>
+              <div class="health-item">
+                <span class="health-label">Alerjiler</span>
+                <span class="health-val">Penisilin (Penicillin)</span>
+              </div>
+              <div class="health-item">
+                <span class="health-label">Acil İletişim</span>
+                <span class="health-val">+90 555 000 00 00</span>
+              </div>
+            </div>
+            <div class="gps-share-toggle">
+              <div class="toggle-info">
+                <h5>Konum Paylaşımı</h5>
+                <p>Ekipler için GPS paylaşımı aktif</p>
+              </div>
+              <span class="badge-status status-active">Aktif</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================== -->
+      <!-- 4. EMERGENCY KIT SCREEN -->
+      <!-- ================================================== -->
+      <section id="screen-kit" class="app-screen">
+        <header class="subpage-header">
+          <h2>Acil Yardım Çantaları</h2>
+        </header>
+
+        <div class="kit-scroll-container">
+          <div class="kit-segment-control">
+            <button class="segment-btn active" data-kit="deprem">Deprem</button>
+            <button class="segment-btn" data-kit="sel">Sel</button>
+            <button class="segment-btn" data-kit="ozel">Özel Çantam</button>
+          </div>
+
+          <!-- Deprem List -->
+          <div class="kit-list-card" id="list-deprem">
+            <h4 class="kit-card-title">🎒 Deprem Eşya Listesi</h4>
+            <div class="kit-items-list">
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Reflektörlü Özel İkaz Yeleği</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Kalın İş Eldiveni</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Yüksek Desibelli Düdük</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Zoomlu El Feneri</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Çok Amaçlı Çakı Seti</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Steril Gaz Kompres & Sargı</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Isı Yalıtımlı Termal Battaniye</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Yüksek Kalorili Konserve</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Steril İçme Suyu</span></label>
+            </div>
+          </div>
+
+          <!-- Sel List -->
+          <div class="kit-list-card hidden" id="list-sel">
+            <h4 class="kit-card-title">🎒 Sel Eşya Listesi</h4>
+            <div class="kit-items-list">
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Su Geçirmez Zoom Fener</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Su Geçirmez İlk Yardım Kiti</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Çelik Tabanlı Çizme & Yağmurluk</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Hijyen ve Temizlik Kiti</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked disabled> <span>Can Yeleği ve Düdük</span></label>
+            </div>
+          </div>
+
+          <!-- Ozel List -->
+          <div class="kit-list-card hidden" id="list-ozel">
+            <h4 class="kit-card-title">🎒 Özel Çanta Hazırla</h4>
+            <div class="kit-items-list" id="custom-items-wrapper">
+              <label class="checkbox-item"><input type="checkbox" checked> <span>Kronik Astım İlaçları</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked> <span>Şarj Cihazı & Powerbank</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked> <span>Nakit Para ve Evrak Dosyası</span></label>
+              <label class="checkbox-item"><input type="checkbox" checked> <span>Yedek Reçeteli Gözlük</span></label>
+            </div>
+            <div class="add-custom-item-bar">
+              <input type="text" id="txt-custom-item" placeholder="Yeni malzeme adı...">
+              <button id="btn-add-custom-item" class="btn btn-add-small">+</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================== -->
+      <!-- 5. BACKEND SIMULATION LOG SCREEN -->
+      <!-- ================================================== -->
+      <section id="screen-logs" class="app-screen">
+        <header class="subpage-header">
+          <h2>Simüle Backend Terminali</h2>
+        </header>
+
+        <div class="logs-scroll-container">
+          <div class="terminal-box">
+            <div class="terminal-header">
+              <span class="terminal-dot red-dot"></span>
+              <span class="terminal-dot yellow-dot"></span>
+              <span class="terminal-dot green-dot"></span>
+              <span class="terminal-title">lifeline-server-demo.log</span>
+            </div>
+            <pre class="terminal-body" id="terminal-content">
+[SYSTEM] Terminal logs initialized.
+[SYSTEM] Waiting for user actions...
+            </pre>
+          </div>
+          <button id="btn-clear-logs" class="btn btn-outlined btn-clear">Konsolu Temizle</button>
+        </div>
+      </section>
+
+      <!-- ================================================== -->
+      <!-- SUCCESS OVERLAY MODAL -->
+      <!-- ================================================== -->
+      <div id="success-overlay" class="overlay-modal">
+        <div class="success-card">
+          <div class="success-icon-badge">
+            <svg viewBox="0 0 24 24"><path fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <h3>Çağrı İletildi!</h3>
+          <p class="success-message">Acil durum yardım çağrınız, güncel GPS koordinatlarınız ve kritik sağlık profiliniz başarıyla acil yardım merkezine ulaştırıldı.</p>
+          
+          <div class="success-details-table">
+            <div class="table-row">
+              <span class="table-lbl">Çağrı No (ID)</span>
+              <span class="table-val font-code">LL-1001</span>
+            </div>
+            <div class="table-row">
+              <span class="table-lbl">Durum</span>
+              <span class="table-val text-green font-bold">Received (Ekipler Yolda)</span>
+            </div>
+            <div class="table-row">
+              <span class="table-lbl">Koordinat</span>
+              <span class="table-val font-code" id="success-gps">37.4220, -122.0841</span>
+            </div>
+          </div>
+
+          <button id="btn-success-close" class="btn btn-primary">Ana Sayfaya Dön</button>
+        </div>
+      </div>
+
+      <!-- ================================================== -->
+      <!-- LOADING OVERLAY -->
+      <!-- ================================================== -->
+      <div id="loading-overlay" class="overlay-modal">
+        <div class="loader-container">
+          <div class="spinning-loader"></div>
+          <p>Acil durum sinyali gönderiliyor...</p>
+        </div>
+      </div>
+
+      <!-- ================================================== -->
+      <!-- NAVIGATION BAR -->
+      <!-- ================================================== -->
+      <nav class="bottom-nav" id="main-nav">
+        <button class="nav-item active" data-screen="home">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span>Ana Sayfa</span>
+        </button>
+        <button class="nav-item" data-screen="profile">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span>Profil</span>
+        </button>
+        <button class="nav-item" data-screen="kit">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+          <span>Çanta</span>
+        </button>
+        <button class="nav-item" data-screen="logs">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 12H5v-2h6v2zm8-4H5V8h14v4z"/></svg>
+          <span>Loglar</span>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
